@@ -1,0 +1,185 @@
+/* components.css
+   Cards, tags, bars, tables, tabs and charts. */
+
+.grid {
+  display:grid;
+  gap:14px;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))
+}
+
+/* Cards, bars and tags */
+.card {
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:8px;
+  padding:16px
+}
+
+.tag {
+  display:inline-block;
+  padding:1px 8px;
+  border-radius:4px;
+  font-size:12px;
+  font-weight:600;
+  border:1px solid var(--bd);
+  color:var(--mu)
+}
+
+.tag.ok {
+  color:var(--ok);
+  border-color:var(--ok)
+}
+
+.tag.b {
+  color:var(--bad);
+  border-color:var(--bad)
+}
+
+.bar {
+  height:6px;
+  background:var(--bd);
+  border-radius:3px
+}
+
+.bar i {
+  display:block;
+  height:100%;
+  background:var(--ac);
+  border-radius:3px
+}
+
+.row {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap
+}
+
+/* Tabs and tables */
+.tabs {
+  display:flex;
+  gap:18px;
+  border-bottom:1px solid var(--bd);
+  margin-bottom:16px;
+  overflow-x:auto
+}
+
+.tabs button {
+  border:0;
+  border-bottom:2px solid transparent;
+  background:none;
+  padding:8px 0;
+  cursor:pointer;
+  color:var(--mu);
+  font-weight:600;
+  white-space:nowrap
+}
+
+.tabs button.on {
+  color:var(--tx);
+  border-color:var(--ac)
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:520px
+}
+
+th,td {
+  padding:9px 10px;
+  border-bottom:1px solid var(--bd);
+  text-align:left;
+  font-size:14px;
+  vertical-align:top
+}
+
+th {
+  color:var(--mu);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.04em
+}
+
+.ov {
+  overflow-x:auto
+}
+
+.slot {
+  padding:2px 0
+}
+
+.opt {
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:11px;
+  margin:6px 0;
+  border:1px solid var(--bd);
+  border-radius:6px;
+  background:var(--card);
+  cursor:pointer
+}
+
+.opt:hover {
+  border-color:var(--ac)
+}
+
+.opt.ok {
+  border-color:var(--ok)
+}
+
+.opt.bad {
+  border-color:var(--bad)
+}
+
+.note {
+  white-space:pre-wrap;
+  line-height:1.65
+}
+
+.chart {
+  display:flex;
+  align-items:flex-end;
+  gap:14px;
+  height:160px
+}
+
+.chart div {
+  flex:1;
+  text-align:center;
+  font-size:12px;
+  color:var(--mu)
+}
+
+.chart b {
+  display:block;
+  background:var(--ac);
+  border-radius:3px 3px 0 0;
+  margin-bottom:5px
+}
+
+.pip {
+  position:fixed;
+  right:16px;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px
+}
+
+.card {
+  background:rgba(22,29,54,.92)
+}
+
+.ban {
+  height:170px;
+  border-radius:8px;
+  border:1px solid var(--bd);
+  background-size:cover;
+  background-position:center 35%;
+  margin-bottom:16px
+}

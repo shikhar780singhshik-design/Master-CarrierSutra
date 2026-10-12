@@ -1,0 +1,355 @@
+/* study-buddy.css
+   The cartoon buddy, its chat panel and the character picker. */
+
+/* Chat bubbles */
+.chat {
+  height:360px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:2px
+}
+
+.m {
+  max-width:85%;
+  padding:9px 13px;
+  border-radius:8px;
+  background:var(--bg);
+  border:1px solid var(--bd);
+  white-space:pre-wrap
+}
+
+.m.u {
+  align-self:flex-end;
+  background:var(--ac);
+  color:var(--on);
+  border-color:var(--ac)
+}
+
+.pip .face {
+  border:0;
+  background:none;
+  padding:0;
+  cursor:pointer;
+  width:88px;
+  height:88px
+}
+
+.bub {
+  max-width:230px;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px
+}
+
+.cp {
+  width:min(390px,calc(100vw - 32px));
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  max-height:min(580px,calc(100vh - 130px))
+}
+
+.cp .hd {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 10px;
+  border-bottom:1px solid var(--bd)
+}
+
+.cp .chat {
+  height:auto;
+  flex:1;
+  min-height:220px;
+  padding:12px
+}
+
+.cp .ft {
+  display:flex;
+  gap:6px;
+  padding:10px;
+  border-top:1px solid var(--bd)
+}
+
+.cp .ft input {
+  margin:0
+}
+
+@keyframes bl {
+  0%,92%,100% {
+    transform:scaleY(1)
+  }
+  96% {
+    transform:scaleY(.1)
+  }
+}
+
+.eye {
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:bl 5s infinite
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .eye {
+    animation:none
+  }
+}
+
+/* Character picker */
+.bud {
+  border:2px solid var(--bd);
+  border-radius:50%;
+  padding:0;
+  width:72px;
+  height:72px;
+  overflow:hidden;
+  cursor:pointer;
+  background:none
+}
+
+.bud.on {
+  border-color:var(--ac);
+  box-shadow:0 0 0 2px var(--ac)
+}
+
+.bud img,.av {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block
+}
+
+.av {
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  border:3px solid var(--ac);
+  box-shadow:0 6px 18px #0009;
+  animation:br 4s ease-in-out infinite
+}
+
+@keyframes br {
+  50% {
+    transform:scale(1.04)
+  }
+}
+
+@keyframes hop {
+  50% {
+    transform:translateY(-10px)
+  }
+}
+
+#pipc.mv .face {
+  animation:hop .5s ease-in-out infinite
+}
+
+#pipc.fl .face {
+  rotate:-7deg
+}
+
+/* The roaming study buddy */
+#pipc {
+  transition-property:left,top;
+  transition-timing-function:cubic-bezier(.45,.05,.35,1);
+  transition-duration:0s;
+  width:96px;
+  height:96px
+}
+
+#pipc .face {
+  width:96px;
+  height:96px
+}
+
+#pipc .bub {
+  bottom:100px
+}
+
+#pipc.dn .bub {
+  top:100px
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .av,#pipc.mv .face {
+    animation:none
+  }
+}
+
+.bud {
+  border-radius:10px;
+  width:78px;
+  height:78px;
+  padding:3px;
+  background:var(--bg)
+}
+
+.bud svg {
+  width:100%;
+  height:100%
+}
+
+.hav svg {
+  width:38px;
+  height:38px;
+  display:block
+}
+
+#pipc,#pipc .face {
+  width:104px;
+  height:104px
+}
+
+#pipc .bub {
+  bottom:108px
+}
+
+#pipc.dn .bub {
+  top:108px
+}
+
+#pipc .face svg {
+  animation:br 4s ease-in-out infinite
+}
+
+.tail {
+  transform-box:fill-box;
+  transform-origin:0% 60%;
+  animation:wg 1.3s ease-in-out infinite alternate
+}
+
+@keyframes wg {
+  to {
+    transform:rotate(16deg)
+  }
+}
+
+.f1,.f2,.mouth {
+  transform-box:fill-box;
+  transform-origin:center
+}
+
+#pipc.mv .f1 {
+  animation:st .28s ease-in-out infinite alternate
+}
+
+#pipc.mv .f2 {
+  animation:st .28s ease-in-out infinite alternate-reverse
+}
+
+@keyframes st {
+  to {
+    transform:translateY(-5px)
+  }
+}
+
+.wing {
+  transform-box:fill-box;
+  transform-origin:50% 0;
+  animation:wf 2.2s ease-in-out infinite alternate
+}
+
+@keyframes wf {
+  to {
+    transform:rotate(-10deg)
+  }
+}
+
+.ant {
+  animation:pu 1.6s ease-in-out infinite alternate
+}
+
+@keyframes pu {
+  to {
+    opacity:.3
+  }
+}
+
+#pipc.talk .mouth {
+  animation:mt .22s ease-in-out infinite alternate
+}
+
+@keyframes mt {
+  to {
+    transform:scaleY(1.8)
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .tail,.wing,.ant,.f1,.f2,.mouth,#pipc .face svg {
+    animation:none!important
+  }
+}
+
+#pipc {
+  position:fixed;
+  z-index:20;
+  width:88px;
+  height:88px;
+}
+
+#pipc .face {
+  border:0;
+  background:none;
+  padding:0;
+  width:88px;
+  height:88px;
+  cursor:pointer
+}
+
+#pipc .face svg,#pipc .face img {
+  transition:transform .3s
+}
+
+#pipc .bub {
+  position:absolute;
+  bottom:92px;
+  width:230px;
+  box-shadow:0 2px 8px #0002
+}
+
+#pipc:not(.rt) .bub {
+  left:0
+}
+
+#pipc.rt .bub {
+  right:0
+}
+
+#pipc.dn .bub {
+  bottom:auto;
+  top:92px
+}
+
+@keyframes tk {
+  to {
+    transform:translateY(-4px)
+  }
+}
+
+#pipc.talk .face {
+  animation:tk .35s ease-in-out infinite alternate
+}
+
+#pcp {
+  position:fixed;
+  right:16px;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  z-index:21
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #pipc {
+    transition:none
+  }
+  #pipc.talk .face {
+    animation:none
+  }
+}

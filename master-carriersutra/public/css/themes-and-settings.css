@@ -1,0 +1,19 @@
+/* themes-and-settings.css
+   The four themes, text size, calm mode and the settings screen look. Loads last. */
+/* ==========================================================================
+   Themes and settings
+   The theme name is written on the page as data-theme. Every colour in the
+   app comes from these variables, so a new theme is just a new block.
+   ========================================================================== */
+:root[data-theme=light] { --bg:#f6f5f1; --card:#ffffff; --tx:#1d2320; --mu:#5f6864; --ac:#1f5f4a; --on:#ffffff; --bd:#dcdad2; --bad:#b3261e; --ok:#1b7a43; }
+:root[data-theme=ocean] { --bg:#0a2a33; --card:#0f3a46; --tx:#e8f6f8; --mu:#9cc3cb; --ac:#ff8a65; --on:#2b1008; --bd:#1f5360; --bad:#ff9e9e; --ok:#8fe3b0; }
+:root[data-theme=contrast] { --bg:#000000; --card:#0a0a0a; --tx:#ffffff; --mu:#d0d0d0; --ac:#ffe600; --on:#000000; --bd:#ffffff; --bad:#ff8080; --ok:#7dff9b; }
+:root[data-theme=light] body::before { opacity: .05; }
+:root[data-theme=contrast] body::before { opacity: 0; }
+aside { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+.card { background: color-mix(in srgb, var(--card) 94%, transparent); }
+body { font-size: calc(15px * var(--fs, 1)); }
+.swatch { border: 2px solid var(--bd); border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+.swatch.on { border-color: var(--ac); box-shadow: 0 0 0 2px var(--ac); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 6px 10px 0; }
+html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }

@@ -1,0 +1,14 @@
+{
+  "name": "master-carriersutra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Study planner and AI study buddy for Class 6 to 10",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/smoke.js"
+  }
+}

@@ -1,0 +1,12 @@
+/* lecture-player.css
+   The lecture video player. */
+/* ==========================================================================
+   Lecture player (YouTube, Vimeo and direct video files play inside the app)
+   ========================================================================== */
+.vwrap { position: relative; padding-top: 56.25%; border-radius: 8px; overflow: hidden; background: #000; margin-top: 10px; }
+.vwrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+video { width: 100%; border-radius: 8px; margin-top: 10px; background: #000; }
+
+@media (prefers-reduced-motion: reduce) {
+  main.enter, .card, .bar i, .opt, #pipc.cheer, #pipc.wave { animation: none !important; transition: none !important; }
+}
