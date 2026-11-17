@@ -54,5 +54,5 @@ server.listen(PORT, () => {
   console.log('AI tutor: ' + (ANTHROPIC_KEY ? 'on' : 'OFF (add ANTHROPIC_API_KEY to .env)'));
   console.log('Cloud voice: ' + (voiceProviders.length ? voiceProviders.map((p) => p.name).join(' + ') : 'OFF (only voices already installed on each device will speak)'));
   if (FREE_TEST_VOICE) console.warn('FREE_TEST_VOICE is on. This is for testing on your own computer only. Use Google or Azure for a real launch.');
-  if (voiceProviders.length) checkVoices();
+  if (voiceProviders.length && process.env.CHECK_VOICES_ON_START === '1') checkVoices();
 });

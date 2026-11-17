@@ -1,6 +1,10 @@
 FROM node:20-alpine
 WORKDIR /app
-COPY . .
+COPY --chown=node:node server.js ./
+COPY --chown=node:node server ./server
+COPY --chown=node:node public ./public
+RUN mkdir -p /app/data && chown node:node /app/data
+USER node
 ENV NODE_ENV=production
 EXPOSE 3000
 CMD ["node", "server.js"]

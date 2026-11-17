@@ -39,7 +39,7 @@ const DATA_FILE = path.join(ROOT, 'data', 'families.json');
 // one so the app still starts. Everyone is then signed out whenever the server restarts.
 let SECRET = process.env.SESSION_SECRET || '';
 
-if (SECRET.length < 24) {
+if (SECRET.length < (PRODUCTION ? 32 : 24)) {
   if (PRODUCTION) { console.error('Set SESSION_SECRET (32 or more characters) before running in production.'); process.exit(1); }
   SECRET = crypto.randomBytes(32).toString('hex');
   console.warn('Note: SESSION_SECRET is missing or short. Using a temporary one. Set it in .env for real use.');
@@ -51,6 +51,6 @@ const AZURE_KEY = process.env.AZURE_SPEECH_KEY || '';
 const AZURE_REGION = process.env.AZURE_SPEECH_REGION || '';
 
 // Unofficial test voice. Needs no key, but it is not an approved Google service: use it only to try the app on your own computer.
-const FREE_TEST_VOICE = process.env.FREE_TEST_VOICE === '1';
+const FREE_TEST_VOICE = !PRODUCTION && process.env.FREE_TEST_VOICE === '1';
 
 module.exports = { ANTHROPIC_KEY, AZURE_KEY, AZURE_REGION, DATA_FILE, FREE_TEST_VOICE, GOOGLE_TTS_KEY, MODEL, PORT, PRODUCTION, PUBLIC_DIR, SECRET };
