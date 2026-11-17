@@ -12,6 +12,8 @@ async function askAi(msgs, json) {
         const d = await r.json().catch(() => ({}));
         if (!r.ok)
             throw new Error(d.error || 'The AI service had a problem.');
+        if (typeof d.text !== 'string' || !d.text.trim())
+            throw new Error('The tutor returned an empty answer. Please try again.');
         return json ? JSON.parse(d.text.replace(/```json|```/g, '').trim()) : d.text;
     }
     const sm = window.claude && await claude.use('sample');
