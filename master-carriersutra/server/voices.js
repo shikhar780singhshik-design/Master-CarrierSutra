@@ -27,14 +27,12 @@ async function googleSpeech(text, languageCode) {
     signal: AbortSignal.timeout(20000),
   });
   let reply = await call({ languageCode, name: GOOGLE_VOICES[languageCode], ssmlGender: 'FEMALE' });
-  if (!reply.ok) reply = await call({ languageCode, ssmlGender: 'FEMALE' }); // try again with no named voice
-  if (!reply.ok) reply = await call({ languageCode });                        // last try: any voice Google has
-  if (!reply.ok) {
-    let why = '';
-    try { why = (await reply.json()).error.message; } catch { /* no details */ }
-    throw new Error('Google voice error ' + reply.status + (why ? ': ' + why.slice(0, 140) : ''));
-  }
-  return Buffer.from((await reply.json()).audioContent, 'base64');
+  if (reply.status === 400) reply = await call({ languageCode, ssmlGender: 'FEMALE' }); // try again with no named voice
+  if (reply.status === 400) reply = await call({ languageCode });                        // last try: any voice Google has
+  if (!reply.ok) throw new Error('Google voice error ' + reply.status);
+  const { audioContent } = await reply.json();
+  if (typeof audioContent !== 'string') throw new Error('Google returned no audio');
+  return Buffer.from(audioContent, 'base64');
 }
 
 async function azureSpeech(text, languageCode) {
@@ -74,8 +72,15 @@ if (FREE_TEST_VOICE) voiceProviders.push({ name: 'Free test voice', speak: freeT
 
 async function speak(text, languageCode) {
   for (const provider of voiceProviders) {
-    try { const audio = await provider.speak(text, languageCode); voiceProblem = ''; return audio; }
-    catch (error) { voiceProblem = provider.name + ': ' + error.message; console.warn('[voice]', voiceProblem); }
+    try {
+      const audio = await provider.speak(text, languageCode);
+      if (!audio.length) throw new Error('Empty audio');
+      voiceProblem = '';
+      return audio;
+    } catch {
+      voiceProblem = provider.name + ' voice unavailable';
+      console.warn('[voice]', voiceProblem);
+    }
   }
   throw new Error(voiceProblem || 'No voice service is set up');
 }

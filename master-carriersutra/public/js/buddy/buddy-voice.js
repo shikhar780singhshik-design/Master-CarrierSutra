@@ -52,60 +52,79 @@ if (window.speechSynthesis) {
     speechSynthesis.onvoiceschanged = () => renderChatPanel();
 }
 
-let speechRunId = 0, cloudVoiceError = '';
+let speechRequest, cloudVoiceError = '';
 
 // Stops anything being spoken.
-function stopSpeech() { speechRunId++; if (buddyState.audio) {
+function stopSpeech() { speechRequest?.abort(); if (buddyState.audio) {
     buddyState.audio.pause();
     buddyState.audio = null;
 } if (window.speechSynthesis)
     speechSynthesis.cancel(); const e = pick('#pipc'); e && e.classList.remove('talk'); }
 
 // Cuts a long reply into short pieces that voices handle well.
-function splitIntoChunks(t, max) { const out = []; let c = ''; for (const x of t.replace(/\s+/g, ' ').match(/[^.!?।]+[.!?।]*/g) || [t]) {
-    if ((c + x).length > max && c) {
-        out.push(c.trim());
-        c = x;
+function splitIntoChunks(text, max) {
+    const chunks = [];
+    let remaining = text.replace(/\s+/g, ' ').trim();
+    while (remaining.length > max) {
+        let cut = remaining.lastIndexOf(' ', max);
+        if (cut <= 0) cut = max;
+        if (/^[\uDC00-\uDFFF]/.test(remaining[cut])) cut--;
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut).trimStart();
     }
-    else
-        c += x;
-} if (c.trim())
-    out.push(c.trim()); return out; }
+    if (remaining) chunks.push(remaining);
+    return chunks;
+}
 
 // Speaks using the server's Google or Azure voice.
 async function speakWithCloudVoice(t) {
     stopSpeech();
-    const me = speechRunId, e = pick('#pipc');
-    let played = false;
+    speechRequest = new AbortController();
+    const { signal } = speechRequest, e = pick('#pipc');
+    const parts = splitIntoChunks(t, 280);
+    let played = 0;
     try {
-        for (const part of splitIntoChunks(t, 280)) {
-            if (me != speechRunId)
+        for (const part of parts) {
+            if (signal.aborted)
                 return;
-            const r = await fetch(API_BASE + '/api/tts', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ text: part, lang: currentLanguage()[0] }) });
+            const r = await fetch(API_BASE + '/api/tts', { method: 'POST', headers: authHeaders(), signal, body: JSON.stringify({ text: part, lang: currentLanguage()[0] }) });
             if (!r.ok) {
-                const d = await r.json().catch(() => ({}));
-                cloudVoiceError = d.detail || 'the voice service is not responding';
                 throw new Error('tts');
             }
             cloudVoiceError = '';
-            const url = URL.createObjectURL(await r.blob());
-            if (me != speechRunId)
-                return;
-            e && e.classList.add('talk');
-            await new Promise((done, fail) => { const a = new Audio(url); a.playbackRate = preference('speed', 1); buddyState.audio = a; a.onended = done; a.onerror = fail; a.play().catch(fail); });
-            played = true;
-            URL.revokeObjectURL(url);
+            const audio = await r.blob();
+            if (signal.aborted) return;
+            const url = URL.createObjectURL(audio);
+            const player = new Audio(url);
+            const cancel = () => player.onended();
+            try {
+                e && e.classList.add('talk');
+                player.playbackRate = preference('speed', 1);
+                buddyState.audio = player;
+                await new Promise((done, fail) => {
+                    player.onended = done;
+                    player.onerror = fail;
+                    signal.addEventListener('abort', cancel, { once: true });
+                    player.play().catch(fail);
+                });
+                played++;
+            } finally {
+                signal.removeEventListener('abort', cancel);
+                URL.revokeObjectURL(url);
+                if (buddyState.audio === player) buddyState.audio = null;
+            }
         }
     }
     catch (x) {
-        if (x && x.name == 'NotAllowedError')
-            cloudVoiceError = 'the browser blocked sound. Tap the page once, then press Test voice';
+        if (signal.aborted) return;
+        cloudVoiceError = x?.name === 'NotAllowedError'
+            ? 'the browser blocked sound. Tap the page once, then press Test voice'
+            : 'the voice service is not responding';
         renderChatPanel();
-        if (me == speechRunId && !played)
-            speakWithBrowserVoice(t);
+        speakWithBrowserVoice(parts.slice(played).join(' '));
     }
     finally {
-        if (me == speechRunId && e)
+        if (!signal.aborted && e)
             e.classList.remove('talk');
     }
 }

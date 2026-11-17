@@ -2,7 +2,7 @@
  * server/routes/study-buddy.js
  * Routes: The AI tutor and the spoken voice.
  */
-const { ANTHROPIC_KEY, PRODUCTION } = require('../config');
+const { ANTHROPIC_KEY } = require('../config');
 const { sendJson } = require('../http-utils');
 const { allow } = require('../security');
 const { PRIVATE_INFO, askClaude } = require('../tutor');
@@ -35,8 +35,8 @@ module.exports = {
     if (PRIVATE_INFO.test(text)) return sendJson(res, 400, { error: 'Remove phone numbers and email addresses before using cloud voice.' });
     try {
       const audio = await speak(text, language);
-      res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Content-Length': audio.length });
+      res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Content-Length': audio.length, 'Cache-Control': 'no-store' });
       res.end(audio);
-    } catch (error) { console.error(error.message); sendJson(res, 502, { error: 'Voice unavailable', detail: PRODUCTION ? undefined : error.message }); }
+    } catch { sendJson(res, 502, { error: 'Voice unavailable' }); }
   },
 };
