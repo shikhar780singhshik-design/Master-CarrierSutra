@@ -20,7 +20,11 @@ function readJsonBody(req, maxBytes = 300 * 1024) {
       chunks.push(chunk);
     });
     req.on('end', () => {
-      try { resolve(chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {}); }
+      try {
+        const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {};
+        if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('invalid body');
+        resolve(body);
+      }
       catch { reject(new Error('bad json')); }
     });
     req.on('error', reject);
