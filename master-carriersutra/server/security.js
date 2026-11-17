@@ -27,11 +27,13 @@ function makeToken(code, role) {
 
 function readToken(token) {
   try {
-    const [body, signature] = String(token).split('.');
+    const [body, signature, ...extra] = String(token).split('.');
     const expected = sign(body);
-    if (!signature || signature.length !== expected.length) return null;
+    if (extra.length || !signature || signature.length !== expected.length) return null;
     if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
     const data = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (!data || !['parent', 'student'].includes(data.role) || !Number.isInteger(data.v) ||
+        typeof data.code !== 'string' || !Number.isFinite(data.exp)) return null;
     return data.exp > Date.now() ? data : null;
   } catch { return null; }
 }
@@ -42,9 +44,10 @@ const attempts = new Map();
 function allow(key, max, windowMs) {
   const now = Date.now();
   const recent = (attempts.get(key) || []).filter((t) => now - t < windowMs);
+  if (recent.length >= max) return false;
   recent.push(now);
   attempts.set(key, recent);
-  return recent.length <= max;
+  return true;
 }
 
 setInterval(() => {
