@@ -32,13 +32,14 @@ const server = http.createServer(async (req, res) => {
   const handler = routes[routeKey];
   if (!handler) return sendJson(res, 404, { error: 'Not found' });
   try {
+    const body = req.method === 'GET' ? {} : await readJsonBody(req);
     let user = null;
     if (!PUBLIC_ROUTES.has(routeKey)) {
-      user = readToken((req.headers.authorization || '').replace('Bearer ', ''));
+      const authorization = /^Bearer ([^\s]+)$/i.exec(req.headers.authorization || '');
+      user = authorization && readToken(authorization[1]);
       const family = user && families[user.code];
       if (!family || (family.tv || 0) !== user.v) return sendJson(res, 401, { error: 'Please sign in again.' });
     }
-    const body = req.method === 'GET' ? {} : await readJsonBody(req);
     await handler(req, res, body, user);
   } catch (error) {
     if (!res.headersSent) sendJson(res, 400, { error: 'Bad request' });
@@ -54,5 +55,5 @@ server.listen(PORT, () => {
   console.log('AI tutor: ' + (ANTHROPIC_KEY ? 'on' : 'OFF (add ANTHROPIC_API_KEY to .env)'));
   console.log('Cloud voice: ' + (voiceProviders.length ? voiceProviders.map((p) => p.name).join(' + ') : 'OFF (only voices already installed on each device will speak)'));
   if (FREE_TEST_VOICE) console.warn('FREE_TEST_VOICE is on. This is for testing on your own computer only. Use Google or Azure for a real launch.');
-  if (voiceProviders.length) checkVoices();
+  if (voiceProviders.length && process.env.CHECK_VOICES_ON_START === '1') checkVoices();
 });

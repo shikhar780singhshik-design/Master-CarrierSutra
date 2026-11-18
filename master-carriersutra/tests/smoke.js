@@ -37,6 +37,12 @@ check('login screen', () => run('render()'));
 run("appState.role='student'; appState.p={name:'Asha',cls:9,age:14,board:'CBSE',school:'X',tutor:'Gulu',buddy:1,lang:3}; appState.chat=[{u:0,t:'Hi'}]");
 for (const screen of ['dash', 'plan', 'videos', 'notes', 'quiz', 'focus', 'port', 'settings']) check('student ' + screen, () => open(screen));
 for (const tab of ['web', 'mine', 'long', 'short']) check('notes tab ' + tab, () => run(`currentScreen='notes'; selectedTabs.nt='${tab}'; render()`));
+check('speech chunks keep long text and Unicode intact', () => {
+    const text = 'a'.repeat(279) + '🙂' + 'नमस्ते'.repeat(90);
+    const chunks = run('splitIntoChunks(' + JSON.stringify(text) + ', 280)');
+    expect(chunks.every(chunk => chunk.length <= 280 && !/^[\uDC00-\uDFFF]/.test(chunk)), 'invalid chunk boundary');
+    expect(chunks.join('') === text, 'speech text was lost');
+});
 check('buddy draws', () => { run('renderBuddy(); buddySays("Hello"); placeBuddy(300,300,true)'); expect(run('chatPanelHtml()').includes('Test voice'), 'panel incomplete'); });
 
 check('own study plan: add, tick, remove', () => {

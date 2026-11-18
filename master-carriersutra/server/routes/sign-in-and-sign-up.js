@@ -30,8 +30,11 @@ module.exports = {
     if (lock && lock.until > Date.now()) return sendJson(res, 423, { error: 'This account is locked for a while after too many wrong tries. Please wait and try again.' });
     const family = families[code];
     const stored = (family && (role === 'parent' ? family.pwHash : family.pinHash)) || DUMMY_HASH;
-    const good = !!family && !!body.secret && secretMatches(String(body.secret), stored);
-    if (!good) { noteFailure(code, req); return sendJson(res, 401, { error: 'Wrong family code or password.' }); }
+    const matches = secretMatches(String(body.secret || ''), stored);
+    if (!family || !matches) {
+      if (family) noteFailure(code, req);
+      return sendJson(res, 401, { error: 'Wrong family code or password.' });
+    }
     lockouts.delete(code);
     sendJson(res, 200, { token: makeToken(code, role), role, code, state: { ...family.state, p: family.profile } });
   },
