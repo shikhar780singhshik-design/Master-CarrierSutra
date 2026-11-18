@@ -24,9 +24,13 @@ async function askClaude(messages) {
   };
   let reply = await call(true);
   if (reply.status === 400) reply = await call(false); // some accounts cannot use web search: still answer
-  if (!reply.ok) throw new Error('Anthropic error ' + reply.status + ' ' + (await reply.text()).slice(0, 200));
+  if (!reply.ok) throw new Error('Anthropic error ' + reply.status);
   const data = await reply.json();
-  return data.content.filter((part) => part.type === 'text').map((part) => part.text).join('');
+  const answer = Array.isArray(data.content)
+    ? data.content.filter((part) => part?.type === 'text' && typeof part.text === 'string').map((part) => part.text).join('')
+    : '';
+  if (!answer.trim()) throw new Error('Anthropic returned an empty answer');
+  return answer;
 }
 
 const PRIVATE_INFO = /(\+?\d[\d\s-]{8,}\d)|[\w.+-]+@[\w-]+\.[\w.]+/;
